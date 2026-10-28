@@ -38,3 +38,6 @@ git push -u origin main uploads your local main branch commits to the remote rep
 
 git branch 
 main and master are just branch names. They work the same way; main is the newer default convention, while older repositories often use master.
+
+
+ce230a9 — A short commit hash, a unique identifier for your saved changes in Git.
