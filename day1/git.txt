@@ -1,0 +1,36 @@
+git status --short
+git rm <file>
+
+git mv src/app-config.js src/config.js
+git commit -m "Rename app-config.js to config.js"
+
+git branch -a
+
+git branch feature
+git switch feature
+git switch -c feature
+
+git switch main
+git branch -D feature
+git checkout branchname
+
+git branch -d feature/search-filters
+git branch -D experiment/new-ui
+
+git branch feature/search-filters 66cd0f7
+git branch experiment/new-ui a296db6
+
+git remote add origin <repository-url>
+
+git push -u origin main
+git push -u origin feature
+git push -u origin feature-branch
+
+git push -u origin login-form
+git add .
+git commit -m "Improve error messages"
+git push
+
+git push -u origin main
+
+git push -u origin main uploads your local main branch commits to the remote repository's main branch and sets up tracking for future pushes.

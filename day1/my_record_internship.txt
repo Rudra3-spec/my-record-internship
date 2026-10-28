@@ -1,0 +1,8 @@
+tuesday
+learned High level of Devops
+life cycle of devops
+devsecops
+
+Wednesday
+ran virtual machines on GCP
+completed git game given by Satish Sir
