@@ -1,0 +1,168 @@
+cat ;
+
+cat filename
+cat > filename --> overwrites
+cat >> filename --> append to last 
+
+
+==========================================================================================================================================
+8. less – Read Files Page by Page
+Useful for large files and log files.
+less server.log
+less text.txt
+
+Space	Next page
+b	Previous pag
+g	Beginning of file
+G	End of file
+q	Quit
+
+==========================================================================================================================================
+
+9. history – Command History
+Displays previously executed commands.
+history
+
+
+Useful operations:
+history 10
+==========================================================================================================================================
+
+cp -r frontend backup/
+
+to copy the entire directory
+
+cp filename foldername/
+
+cp folder1/file.txt folder2/file.txt 
+
+
+mkdir -p project/frontend/src
+
+-p creates parent directories if they don't exist.
+
+
+rm file.txt       # Delete file
+rm -r folder      # Delete folder with contents
+rmdir folder      # Delete empty folder
+
+
+==========================================================================================================================================
+
+alias ll="mkdir"
+ll foldername
+
+unalias ll
+
+==========================================================================================================================================
+
+exit (return from the shell)
+exit 0 ->success
+exit 1 -> error
+
+
+whatis – Short Command Description
+Provides a one-line description of a command.
+
+eg : whatis ls 
+>>> list directory contents
+
+
+=========================================================================================================================================
+
+You want to find all .log files under the current directory. Which command?
+
+find . -name '*.log'
+
+
+=========================================================================================================================================
+
+
+cp filename foldername/
+cp -r foldername foldername/
+mv filename foldername/
+mv foldername foldername/
+
+for renaming the same directory is needed .
+mv filename filename (if same directory)
+mv foldername/filename foldername/newfilename
+
+==========================================================================================================================================
+
+find . -name "server.js"   -> find this file 
+
+./backend/server.js
+
+
+find . -name d -> find directories in current directories 
+find . -name f -> find files in current directory
+
+
+==========================================================================================================================================
+man – Manual
+Used to read detailed documentation about a Linux command.
+
+Example:
+man ls
+
+Inside the manual:
+- Space → Next page.
+- b → Previous page.
+- /keyword → Search.
+- q → Exit.
+
+
+============================================================================================================================================================================================
+
+
+help -> gives the information about any command how to run and how it works
+help cd 
+
+
+============================================================================================================================================================================================
+
+grep – Search text inside files
+Very important for DevOps, especially when checking logs.
+
+Suppose server.log contains:
+Server started
+Database connected
+Error: Database connection failed
+User logged in
+Error: File not found
+Server stopped
+
+
+Search for the word Error:
+grep "Error" server.log
+============================================================================================================================================================================================
+
+1. ls -R
+Displays all files and subdirectories recursively.
+2. ls -lR
+Displays all files and subdirectories recursively with detailed information (permissions, owner, size, date).
+3. ls -r
+Displays items in reverse sorting order (Z to A).
+4. ls -lr
+Displays items in reverse sorting order with detailed information.
+
+ls -ld 
+ls -l
+ls -a
+
+
+=====================================================================================================================================================================================
+
+grep -i "ERROR" backup/server.log
+grep -n "ERROR" backup/server.log
+grep "ERROR" backup/server.log
+
+
+find . -type f -name "*.log"
+find .
+find . -type f
+find . -type d
+
+history
+
+ctrl+R

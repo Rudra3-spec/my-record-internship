@@ -1,0 +1,147 @@
+1. Navigation and directory management
+pwd
+ls
+ls -l
+ls -a
+ls -R
+cd
+cd ..
+cd ~
+mkdir foldername
+mkdir -p parent/child
+
+
+2. File management
+touch file.txt
+cat file.txt
+echo "Hello World"
+echo "Hello World" > file.txt
+echo "Another line" >> file.txt
+cp file.txt backup.txt
+mv file.txt newfile.txt
+rm file.txt
+rm -r foldername
+
+
+3. Users and user information
+whoami
+id
+groups
+groups rahul
+sudo adduser rahul
+sudo adduser amit
+
+
+4. Group management
+sudo groupadd developers
+sudo groupadd testers
+getent group
+getent group developers
+getent group testers
+sudo usermod -aG developers rahul
+sudo usermod -aG testers amit
+sudo usermod -aG developers rudra
+
+
+5. Permissions
+chmod 755 file.txt
+chmod 644 file.txt
+chmod 600 file.txt
+chmod 700 foldername
+chmod 777 file.txt
+
+
+Permission values:
+Permission	Value
+Read (r)	4
+Write (w)	2
+Execute (x)	1
+
+6. Ownership management
+sudo chown rahul file.txt
+sudo chown rahul:developers file.txt
+sudo chown root:developers backend
+sudo chown amit:testers /opt/testing
+
+
+7. Directory permissions and SGID
+sudo mkdir /opt/company-backend
+sudo chown root:developers /opt/company-backend
+sudo chmod 2770 /opt/company-backend
+
+
+For your existing backend directory:
+cd ~/projects
+ls -l
+sudo chown root:developers backend
+sudo chmod 2770 backend
+ls -ld backend
+
+
+8. Verification commands
+ls -ld backend
+ls -l
+id
+groups
+groups rahul
+getent group developers
+
+
+
+switching users:
+su - rahul
+
+
+
+
+
+
+
+
+SUID	4	Runs a file with its owner's privileges
+SGID	2	Runs a file with its group's privileges; on directories, new items inherit the directory's group
+Sticky Bit	1	Restricts who can delete files in a shared directory
+
+
+
+
+sudo chmod 4766 test.txt
+
+
+SUID (Set User ID) means an executable file runs with the permissions of its owner, not the user executing it.
+
+
+A simple real-world use case of SUID between two normal users:
+Use case: Shared project application
+Suppose a company has two users:
+- Rudra – owns a report-generating program.
+- Rahul – needs to execute that program.
+The program needs to write reports into a directory that only Rudra has permission to access.
+
+Without SUID:
+- Rahul executes the program.
+- The program runs with Rahul's permissions.
+- It cannot write into Rudra's protected directory.
+With SUID:
+- Rahul executes the program.
+- The program runs with Rudra's effective user permissions.
+- It can write reports into that directory.
+
+=========================================================================================================
+What happens after this?
+Suppose Rudra, Rahul and Amit all use /company.
+- All three can enter the directory.
+- All three can create files.
+- All three can read and modify files if file permissions allow it.
+- But Rahul cannot delete Rudra's files.
+- Amit cannot delete Rahul's files.
+- Each user can delete their own files.
+The directory owner and root can also delete files.
+
+==========================================================================================================
+
+
+sudo mkdir /opt/company
+sudo chown root:developers /opt/company
+
+
