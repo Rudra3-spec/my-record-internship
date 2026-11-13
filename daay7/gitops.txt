@@ -1,0 +1,572 @@
+gitops
+
+
+mkdir -p vm vpc gke
+it will create 3 directories 
+
+
+A boot disk is any data storage medium that a computer uses to load and run its operating system or diagnostic software during startup
+
+
+==============================================================================================================================================================================================
+
+rudra@Shishya3:/mnt/c/Users/rudra/OneDrive/Desktop/terraform-gcp-atlantis/modules$
+
+
+==============================================================================================================================================================================================
+
+.
+├── backend
+│   └── backend.tf
+├── modules
+│   ├── compute
+│   │   ├── main.tf
+│   │   ├── outputs.tf
+│   │   └── variables.tf
+│   ├── storage
+│   │   ├── main.tf
+│   │   ├── outputs.tf
+│   │   └── variables.tf
+│   └── vpc
+│       ├── main.tf
+│       ├── outputs.tf
+│       └── variables.tf
+└── variables
+    ├── main.tf
+    ├── outputs.tf
+    ├── provider.tf
+    ├── terraform.tfvars
+    └── variables.tf
+
+
+
+variables/terraform.tfvars contains actual values.
+
+variables/variables.tf declares the variables.
+
+variables/main.tf passes those values to individual modules.
+
+Each module receives them through its own variables.tf.
+
+
+
++++
+
+11.2 Format all Terraform files
+Run:
+terraform fmt -recursive
+
+What does this do?
+- Formats all .tf files.
+- Fixes indentation.
+- Makes your Terraform code consistent.
+- Does not create any GCP resources.
+
+
+
+
+============================================================================================================================================================================================
+two architectural fixes
+
+1)Your Compute module currently uses the default VPC, whereas we are creating a custom VPC. We should connect them.
+
+>>>how we did it? by adding a subnet 
+What is a subnet?
+A VPC is your network. A subnet is a smaller IP network inside that VPC.
+Here, 10.0.1.0/24 is the IP range assigned to our subnet.
+
+
+
+2)Your backend/backend.tf is in a separate directory. Terraform will not automatically load it when you run Terraform from variables/. We'll configure the backend in the correct root module directory when we migrate to GCS.
+
+>>>>
+Initially use local Terraform state.
+Create the GCS bucket.
+Create variables/backend.tf with the GCS backend configuration.
+Run terraform init -migrate-state.
+Move the existing local state into GCS.
+
+
+=========================================================================================================================================================================================
+
+now basically the vm i will create will be connected to VPC i created right ?
+Exactly bro! Yes. Correct
+
+Your final architecture will look like this:
+
+Custom VPC
+atlantis-vpc
+
+Subnet
+atlantis-subnet
+
+10.0.1.0/24
+
+Compute Engine VM
+atlantis-demo-vm
+
+
+===========================================================================================================================================================================================
+
+variabbles folder that we created basically contains the variable declaration its value and using main we pass that variables to the main of modules that we willl create
+Exactly bro! You've understood it correctly. Just one small clarification.
+
+Your variables/ folder is actually your Root Module. It contains three important responsibilities:
+
+variables.tf – Declares which variables are needed.
+
+terraform.tfvars – Provides actual values for those variables.
+
+main.tf – Calls the child modules and passes the values to them.
+
+How everything connects
+variables/ (Root Module)
+
+Main Terraform configuration
+
+variables.tf → Declares variables
+
+terraform.tfvars → Stores actual values
+
+main.tf → Calls modules and passes values
+
+Passes values
+
+Compute
+
+VM
+
+VPC
+
+Network
+
+Storage
+
+Bucket
+
+Each child module has its own variables.tf, main.tf and outputs.tf
+
+============================================================================================================================================================================================
+
+Our root module is variables/   meaning of this
+
+
+terraform-gcp-atlantis/
+│
+├── modules/
+│   ├── compute/
+│   ├── vpc/
+│   └── storage/
+│
+├── backend/
+│
+└── variables/
+    ├── main.tf
+    ├── provider.tf
+    ├── variables.tf
+    ├── terraform.tfvars
+    └── outputs.tf
+
+
+Root module means the main directory from where Terraform starts executing your configuration.
+
+In our project, variables/ is the root module because:
+- main.tf calls the Compute, VPC and Storage modules.
+- provider.tf configures the GCP provider.
+- variables.tf declares variables.
+- terraform.tfvars provides actual values.
+The modules/ directories are called child modules because the root module calls them.
+Simple example
+When you execute:
+cd variables
+terraform init
+terraform plan
+
+
+Terraform reads the configuration files inside variables/ and follows the module references to execute the child modules.
+
+
+=========================================================================================================
+
+
+full
+
+
+created the directory structure
+understand the difference between modules backend and variables(root module)
+variables have the project id all and pass it to modules
+configured the subnet to connect my vm to that vpc
+configured the backend to be stored in the bucket i created 
+
+
+
+connected to vm i created using ssh 
+
+gcloud compute ssh atlantis-demo-vm \
+  --zone=asia-south1-a \
+  --project=social-monitor-487714
+
+
+
+
+
+
+
+===================================================================================
+
+SSH connection issue and resolution
+Issue 1: SSH key was missing
+- Initially, my WSL machine didn't have an SSH key.
+- I used gcloud compute ssh, which automatically generated a public and private SSH key pair and registered the public key with Google Cloud.
+Issue 2: SSH connection timed out
+
+- Even after generating the keys, I couldn't connect to the VM because the custom VPC didn't have a firewall rule allowing SSH traffic on port 22.
+
+Issue 3: IAP connection failed
+
+- I tried connecting through IAP, but it also failed because the firewall wasn't allowing IAP traffic.
+
+How I solved it:
+1. Enabled the required Network Management API and IAP API for troubleshooting.
+2. Created a firewall rule named allow-iap-ssh.
+3. Allowed TCP port 22 from Google's IAP IP range 35.235.240.0/20.
+4. Added the allow-iap-ssh network tag to my VM.
+5. Retried the SSH command with --tunnel-through-iap.
+
+>>port 22 is the default port used by SSH (Secure Shell).
+
+>>>A firewall is a security system that controls incoming and outgoing network traffic based on rules.
+
+Think of it like a security guard at a building entrance.
+- It allows authorised people to enter.
+- It blocks unauthorised people.
+- It follows predefined rules.
+
+
+>>>>
+>>>>
+>>>>
+
+whoami
+hostname
+
+cat /etc/os-release
+is used to display information about the operating system installed on a Linux machine.
+
+Let's break it down:
+- cat – displays the contents of a file.
+- /etc/os-release – a system file containing OS information.
+Your output tells us:
+PRETTY_NAME="Debian GNU/Linux 12 (bookworm)"
+VERSION_ID="12"
+VERSION_CODENAME=bookworm
+
+
+So we confirmed that:
+- OS: Debian GNU/Linux
+- Version: 12
+- Codename: Bookworm
+
+
+
+
+
+>> install terraform
+downloaded supporting software
+downloaded hashicorp repository
+added terraform repository to the ubuntu
+downloaded terraform
+
+>>now atlantis
+Install Atlantis
+Atlantis is the tool that connects GitHub pull requests with Terraform.
+
+For example, when you comment atlantis plan on a PR, Atlantis runs Terraform plan on your infrastructure code.
+
+
+>>downloaded ngrok
+
+>> connected ngrok dashboard (account) to my VM console using authtoken given by ngrok
+
+>>ngrok http 4141
+>> 4141 is the default port on which the Atlantis server listens for HTTP requests.
+
+>>>>
+Forwarding
+https://refurbish-register-liking.ngrok-free.dev -> http://localhost:4141
+
+>>open new terminal2
+
+===================================================================================================================================
+
+
+now
+>>>GitHub → ngrok URL → GCP VM → Atlantis (port 4141)
+
+
+>>openssl rand -hex 32 (generates webhook token)
+>>eb6fb934f82d5842c2400c1822100ad2cc1cbb2de6e002cd65b885c8187caec5
+
+>>this is PAT github
+
+
+
+>>
+read -rsp "Enter GitHub token: " ATLANTIS_GH_TOKEN
+echo
+export ATLANTIS_GH_TOKEN
+
+read -rsp "Enter webhook secret: " ATLANTIS_GH_WEBHOOK_SECRET
+echo
+export ATLANTIS_GH_WEBHOOK_SECRET
+
+atlantis server
+
+
+
+keep both terminals running
+
+
+Configure GitHub Webhook
+Now open your GitHub repository:
+Open repository Webhooks settingsFollow these steps:
+1. Click Add webhook.
+2. Fill in the following details:
+Payload URL
+
+Copy this exact URL:
+
+https://refurbish-register-liking.ngrok-free.dev/events
+ Copy URL
+
+
+
+
+
+
+============================================================================
+why atlantis plan did not worked
+Bro, actually atlantis plan did work, but it didn't detect a project to execute initially.
+
+There were two different situations:
+
+1. When you first ran:
+atlantis plan
+
+Atlantis responded:
+
+Ran Plan for 0 projects
+Why?
+
+Your PR only changed atlantis.yaml. It didn't modify any .tf files, so Atlantis autoplan didn't select your project.
+
+2. When you ran:
+atlantis plan -p gcp-infrastructure
+
+Atlantis successfully executed Terraform.
+
+It showed:
+
+Ran Plan for project: gcp-infrastructure
+dir: variables
+workspace: default
+
+Plan: 0 to add, 1 to change, 0 to destroy.
+Why did this work?
+
+Because -p explicitly selected the project defined in atlantis.yaml.
+
+Remember this for your training
+Command
+
+Purpose
+
+atlantis plan
+
+Plan all eligible projects in the PR
+
+atlantis plan -p gcp-infrastructure
+
+Plan the specified project
+
+atlantis apply -p gcp-infrastructure
+
+Apply the specified project's saved plan====================================================================================
+
+
+============================================================================================================================================================================================
+
+what did atlantis.yaml file have
+Bro, this is the exact atlantis.yaml file we created in your repository root:
+
+version: 3
+
+projects:
+  - name: gcp-infrastructure
+    dir: variables
+    workspace: default
+    autoplan:
+      enabled: true
+      when_modified:
+        - "*.tf"
+        - "../modules/**/*.tf"
+
+What does each field mean?
+Field
+
+Meaning
+
+version: 3
+
+Atlantis configuration file version.
+
+projects:
+
+Defines Terraform projects managed by Atlantis.
+
+name
+
+Project name: gcp-infrastructure.
+
+dir: variables
+
+Terraform root module is inside the variables directory.
+
+workspace: default
+
+Uses Terraform's default workspace.
+
+autoplan: enabled: true
+
+Enables automatic Terraform planning.
+
+when_modified
+
+Specifies which changed files trigger autoplan.
+
+*.tf
+
+Terraform files in the project directory.
+
+../modules/**/*.tf
+
+Terraform files inside the modules directory and its subdirectories.
+
+Why did we create this file?
+Without this configuration, Atlantis may not know which directory contains your Terraform root module.
+
+We used atlantis.yaml to tell Atlantis:
+
+Where our Terraform configuration exists.
+
+What to call our Terraform project.
+
+Which files should trigger automatic planning.
+
+Which Terraform workspace to use.
+
+
+
+
+
+
+
+
+
+
+
+
+========================================================================================================================================================================================================================================================================================================================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+suppose i change a .tf file push the code to github how exactly we create a PR?
+Bro, let's say you want to change the VM machine type from e2-medium to e2-small.
+
+Here is the exact workflow.
+
+Step 1: Make a change in your .tf file
+For example, edit terraform.tfvars or the relevant Terraform configuration in your project.
+
+Step 2: Create a new Git branch
+In WSL, from your project root:
+
+git checkout main
+git pull origin main
+git checkout -b change-vm-machine-type
+
+A new branch keeps your changes separate from main.
+
+Step 3: Commit and push your changes
+git add .
+git commit -m "Change VM machine type"
+git push -u origin change-vm-machine-type
+
+Now your new branch is available on GitHub.
+
+Step 4: Create a Pull Request
+Open your GitHub repository:
+
+Open your repository
+
+Click Pull requests.
+
+Click New pull request.
+
+Select:
+
+Base: main
+
+Compare: change-vm-machine-type
+
+Add a title and description.
+
+Click Create pull request.
+
+GitHub Basics: 10 Steps Guide from Repo to Desktop - The Data School
+
+Step 5: Atlantis automatically runs plan
+Because your .tf file changed and matches the when_modified patterns in atlantis.yaml, Atlantis should automatically run Terraform plan.
+
+You will see its plan result in the PR conversation.
+
+Step 6: Apply the changes
+After reviewing the plan, comment:
+
+atlantis apply -p gcp-infrastructure
+
+Atlantis applies the changes to GCP.
+
+Remember this complete workflow
+1. Modify Terraform .tf file
+
+2. Git add, commit and push
+
+3. Create GitHub Pull Request
+
+4. Atlantis automatically runs PLAN
+
+5. Review the plan
+
+6. Comment atlantis apply
+
+7. Merge PR into main
+
+
+========================================================================================================================================================================================================================================================================================================================================================================================
+
+Command	Purpose
+git checkout branch-name	Switch to an existing branch
+git switch branch-name	Switch to an existing branch
+git checkout -b branch-name	Create and switch to a new branch
+git switch -c branch-name	Create and switch to a new branch
