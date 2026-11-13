@@ -1,0 +1,165 @@
+day 5
+
+chmod +t /shared
+chmod +t shared 
+
+du -h .
+df -h
+du -sh directory
+
+
+terraform setup:
+1. sudo apt update 
+2. software properties common -> verifies digital signatures and manages software repos.
+3. download hashicorp repository ( a company that provide devops tools like terraform , vault)
+4. add hashicorp repository to the ubuntu so that ubuntu can use hashicorp tools 
+5. sudo apt update
+6. install terraform
+
+5. install aws cli
+
+
+GCLI Setup:
+
+1. Update Ubuntu
+Refresh package information
+
+2. Install dependencies
+Install supporting tools
+
+3. Add Google's security key
+Verify package authenticity
+
+4. Add Google's repository
+Tell Ubuntu where to find packages
+
+5. Install Google Cloud C
+
+====================================================================================================================================================================================================================================================================================
+
+1. Terraform installation
+Your understanding:
+1. Updated Ubuntu.
+2. Downloaded package dependencies.
+3. Downloaded HashiCorp's GPG key.
+4. Added HashiCorp's repository to Ubuntu.
+5. Installed Terraform.
+What actually happened?
+- Ubuntu update: Updated the package information.
+- Dependencies: Installed required supporting packages.
+- HashiCorp: The company that develops Terraform.
+- GPG key: Used to verify that packages come from a trusted source.
+- HashiCorp repository: Tells Ubuntu where to find Terraform packages.
+- Terraform installation: Installed Terraform using APT.
+
+
+
+2. Google Cloud CLI installation
+Your understanding:
+1. Updated Ubuntu.
+2. Downloaded package dependencies.
+3. Added Google's GPG key.
+4. Added Google's repository.
+5. Installed Google Cloud CLI.
+What actually happened?
+- Google's GPG key verifies the authenticity of packages.
+- Google's repository tells Ubuntu where to find Google Cloud CLI.
+- Google Cloud CLI (gcloud) allows us to interact with GCP through the terminal.
+
+
+
+3. Connecting Terraform with GCP
+This is the most important part.
+
+Let's understand what you did.
+Step	Command/action	Purpose
+1	gcloud auth login	Logged into Google Cloud
+2	Browser authentication	Verified your Google account
+3	gcloud projects list	Listed available projects
+4	gcloud config set project PROJECT_ID	Selected your project
+5	gcloud auth application-default login	Configured credentials for Terraform
+6	Browser authentication	Authorized application credentials
+7	gcloud auth application-default print-access-token	Verified that an access token can be generated
+8	gcloud services enable ...	Enabled required GCP APIs
+
+4. How are Terraform and GCP connected?
+This is where you should understand one new term: Google Provider.
+
+Terraform doesn't directly understand every cloud platform.
+
+It uses providers to communicate with cloud platforms.
+
+For example:
+- AWS Provider → AWS
+- Google Provider → GCP
+- Azure Provider → Azure
+In our case, we'll use the Google provider.
+Terraform
+Infrastructure code
+
+Google Provider
+Communication bridge
+
+Google Cloud Platform
+Creates and manages resources
+
+
+
+===================================================================================================================================================================================================================================================================================
+
+Issue faced
+Terraform was installed successfully using HashiCorp's APT repository, but running:
+terraform --version
+
+
+displayed Google Cloud Shell's installation instructions instead of the version.
+How we troubleshooted
+1. which terraform – Found Terraform at /usr/bin/terraform.
+2. ls -l /usr/bin/terraform – Confirmed the binary existed.
+3. type terraform – Revealed Bash was using a cached location: /google/bin/terraform.
+4. /usr/bin/terraform version – Confirmed our installed Terraform worked.
+Solution
+We executed:
+hash -r
+
+
+This cleared Bash's cached command locations.
+
+Then:
+terraform --version
+
+
+Resolved
+Terraform v1.17.1 was displayed successfully.
+
+Interview takeaway: We faced a command-path caching issue in Cloud Shell and resolved it by clearing Bash's command hash using hash -r.
+
+>>which terraform tells you the location/path of the Terraform executable that your shell finds through its PATH search.
+
+>>Cached location means Bash had remembered an old location of the Terraform command.
+
+
+
+
+========================================================================================================================================
+
+2. What does another Terraform resource mean?
+A resource is simply an infrastructure component that Terraform can create and manage.
+
+For example:
+GCP component	Terraform resource type
+Virtual Machine	google_compute_instance
+Storage Bucket	google_storage_bucket
+VPC Network	google_compute_network
+GKE Cluster	google_container_cluster
+GKE Node Pool	google_container_node_pool
+
+
+
+
+
+
+
+
+
+========================================================================================================================================

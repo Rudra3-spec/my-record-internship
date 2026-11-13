@@ -1,0 +1,35 @@
+Record: GCP Terraform VM – Unnecessary Cost Issue
+1. What was the issue?
+
+While practising Terraform with GCP, I created a GKE (Google Kubernetes Engine) cluster named terraform-gke-cluster.
+- The cluster created 3 worker node VMs.
+- These VMs were running continuously.
+- Even though I wasn't using Kubernetes, the resources were active.
+- This could lead to unnecessary cloud charges.
+2. Why couldn't I stop the VMs individually?
+
+When I opened Compute Engine → VM Instances, I noticed:
+- The 3 VMs had names starting with gke-terraform-gke-cl.
+- The Stop and Suspend options were disabled.
+- These VMs were managed by GKE, not independently created VMs.
+3. How did I troubleshoot and solve it?
+1. Opened Google Cloud Console.
+2. Navigated to Kubernetes Engine → Clusters.
+3. Selected terraform-gke-cluster.
+4. Opened the Nodes tab.
+5. Located the terraform-node-pool.
+6. Changed the node count from 1 to 0.
+7. Saved the configuration.
+This requested GKE to scale down the worker nodes.
+
+4. What was the result?
+- GKE started removing the worker nodes.
+- The associated worker VMs should disappear once scaling completes.
+- The cluster itself remains present.
+- This reduces worker-node compute costs, but does not necessarily eliminate all GKE charges.
+5. What did I learn?
+- GKE manages its worker nodes.
+- We should manage GKE worker nodes through node pools rather than Compute Engine.
+- Scaling a node pool to zero removes worker nodes.
+- Deleting a cluster is different from scaling it to zero.
+- Always check running cloud resources to avoid unnecessary billing.

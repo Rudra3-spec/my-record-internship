@@ -1,0 +1,83 @@
+ls -ll gives the permissions of the folders in current directory
+
+
+ls -ll backend/
+ls -l backend/
+
+
+==========================================================================================================================================
+
+what we are going to do is basically currently our terraform is handling the 5 services okay so the bucket service is there we will isolate it store the state files of terraform not in the local system but in remote and this bucket should act as the backend of the terraform , backend is basically the place where terraform stores its state files , suppose in future my mistakenly terraform destroy happened and every resource gets deleted then from that state file stored in bucket which is in remove we can again gain those resources because terraform is not going to manage those resources we have to do it manually .
+
+
+
+>>>
+
+cp terraform.tfstate terraform.tfstate.backup
+
+
+terraform state rm google_storage_bucket.my_bucket
+
+backend "gcs" {
+    bucket = "rudra-terraform-practice-2026"
+    prefix = "terraform/state"
+  }
+
+add the above in provider.tf
+
+and remove bucket part from main.tf
+
+
+terraform init -migrate-state
+ (((Terraform should ask whether you want to copy your existing local state to the new GCS backend.))
+
+gcloud storage ls gs://rudra-terraform-practice-2026/terraform/state/
+  >. gcloud storage cat gs://rudra-terraform-practice-2026/terraform/state/default.tfstate
+
+
+check whether the bucket exists 
+gcloud storage buckets describe gs://rudra-terraform-practice-2026
+
+
+====================================================================================================================================================================================================================================================================================
+
+Terraform state is a record of the resources Terraform manages and their details.
+
+For example, it stores information like:
+- Resource name: terraform-vm
+- Resource type: VM instance
+- GCP resource ID
+- Machine type: e2-micro
+- Other resource attributes and configuration details
+
+
+>>>
+how we can display state in wsl
+cat terraform.tfstate
+
+
+====================================================================================================================================================================================================================================================================================
+
+He wants separate Terraform state files for each service, with each service's state stored in its own folder inside the same GCS bucket.
+
+For example:
+rudra-terraform-practice-2026
+
+ terraform/
+
+ state/
+
+vm/
+
+default.tfstate
+
+vpc/
+
+default.tfstate
+
+gke/
+
+default.tfstate
+
+gcs/
+ 

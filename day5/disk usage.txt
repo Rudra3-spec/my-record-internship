@@ -1,0 +1,152 @@
+disk usage
+
+df - tells us how much disk space is used and available on a filesystem ,partition .
+du - tells us how much space files and directories are consuming 
+
+df -h
+du -sh /*
+
+sudo du -sh /var/*
+
+sudo du -sh /var/log/*
+
+sudo find /var/log -type f -size +100M
+
+sudo truncate -s 0 /var/log/application.log 
+
+(this command empties the  log file without deleting it )
+
+also can clean up old logs
+
+sudo journalctl --vacuum-time=7d
+
+
+
+==========================================================================================================================================================================================
+
+
+systemctl list-units --all --type=service | grep -i mongo
+
+
+
+
+(if disk issue )
+
+      df -h
+
+      sudo du -sh /var/*
+
+      sudo du -sh /var/log/*  ---->> sudo truncate -s 0 /path/to/old.log
+
+      sudo systemctl restart mongod
+
+      sudo systemctl status mongod
+
+
+sudo systemctl cat mongod
+
+      Find the configuration file path in ExecStart.
+
+      For example:
+      --config /etc/mongod.conf
+
+sudo cat /etc/mongod.conf
+
+
+      Look for:
+      systemLog:
+          path: /var/log/mongodb/mongod.log
+
+      Now you know where the logs are stored!
+
+
+cd /var/log/mongodb
+ls -lh
+sudo tail -50 mongod.log
+
+
+
+
+((((((
+sudo systemctl cat mongod
+
+This command shows the configuration used by the MongoDB systemd service.
+
+It means it shows the instructions Linux follows to run MongoDB.
+
+Think of it like a recipe that tells Linux:
+
+Who should run MongoDB? → User=mongodb
+
+Which program should be executed? → /usr/bin/mongod
+
+Which configuration file should MongoDB use? → /etc/mongod.conf
+
+What command should start it? → Defined in ExecStart.
+
+For example:
+
+[Service]
+User=mongodb
+ExecStart=/usr/bin/mongod --config /etc/mongod.conf
+When Linux starts MongoDB, it reads these instructions and executes the specified command.
+
+In simple words:
+
+systemctl cat mongod = Shows Linux how MongoDB is configured to start and run.
+
+sudo cat /etc/mongod.conf = Shows MongoDB's own settings, like port, database location and log location.
+
+))))))))))
+
+1. What does /usr contain?
+/usr contains many installed programs, libraries and shared resources used by the system and users.
+
+2. What does /bin contain?
+/bin traditionally contains essential executable commands needed for basic system operations.
+
+======================================================================================================
+
+
+sudo ss -lntp | grep 27017
+
+
+======================================================================================================
+
+
+free -h
+
+
+This command shows how much RAM (memory) your Linux server is using and how much is available.
+
+top
+
+
+The top command shows the currently running processes and how much system resources they are consuming in real time.
+
+=====================================================================================================
+sudo systemctl cat nginx
+basically sudo system cat process name 
+
+
+
+
+if website is not reachable or something 
+
+
+sudo systemctl status nginx
+sudo journalctl -u nginx -n 30
+the above two commands to we have to use always 
+
+curl http://localhost:5000
+ping http://localhost:5000
+ss -tulpn 
+
+ss -tulpn | grep :8080 or grep 8080 both works 
+
+=====================================================================================================
+
+grep "     " location /
+
+find . (location) -type f -name "*.log"
+

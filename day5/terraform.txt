@@ -1,0 +1,133 @@
+nano provider.tf
+
+it installs the google provider and makes the establishment of communication between terraform and google 
+terraform init 
+
+
+network = "default" means we're connecting our VM to the default VPC network in Google Cloud.
+What is a VPC?
+VPC (Virtual Private Cloud) is a virtual network where your cloud resources communicate with each other.
+
+
+terraform init -> downloads the provider and establish connection between gcp (any cloud) and terraform
+terraform validate -> checks whether our code is correct or not 
+terraform plan
+terraform apply
+terraform destroy
+
+
+>>terraform state list
+google_compute_instance.my_vm
+
+What does this mean?
+Terraform maintains a state file (terraform.tfstate) to remember which resources it manages and their current information.
+
+
+
+========================================================================================================================================================================================================================================================================================
+What does (known after apply) mean?
+For example:
+nat_ip = (known after apply)
+
+
+It means Terraform doesn't know the external IP yet because Google Cloud will assign it when the VM is created.
+
+========================================================================================================================================
+
+
+gcloud auth login --no-launch-browser
+
+gcloud auth application-default login --no-launch-browser   ((This created credentials that applications such as Terraform can use to authenticate with Google Cloud.))
+
+gcloud auth application-default print-access-token
+
+gcloud projects list
+
+
+gcloud config get-value project → Shows the current project.
+
+gcloud config set project PROJECT_ID → Changes the current project.
+
+
+gcloud auth list 
+
+gcloud compute instances list
+
+gcloud storage buckets list
+
+
+
+
+
+((((((((((((((((
+ADC = Application Default Credentials.
+
+In simple words, ADC is a set of Google authentication credentials that allows applications like Terraform to access your Google Cloud account.
+Why do we need ADC?
+Imagine:
+- You have a Google Cloud account.
+- Terraform wants to create a VM in your GCP project.
+- But how will Google know that Terraform is authorised to create that VM?
+ADC provides the authentication credentials.
+How did we configure it?
+We ran:
+gcloud auth application-default login
+
+
+This:
+1. Opened Google login.
+2. You signed in with your Google account.
+3. Google generated authentication credentials.
+4. Terraform can use those credentials to communicate with GCP.
+Simple difference
+Command	Purpose
+gcloud auth login	Authenticates you for using gcloud CLI.
+gcloud auth application-default login	Creates credentials for applications like Terraform
+
+)))))))))))))))))))
+
+
+
+
+
+
+
+
+
+
+
+
+
+==============================================================================================================================================================================================================================================================================================================================================================================================================================
+
+
+
+terraform import google_storage_bucket.my_bucket rudra-terraform-practice-2026
+
+
+for cluster service : Kubernetes API enable 
+ gcloud services enable container.googleapis.com
+
+==========================================================================================================================================
+A GKE cluster is the Kubernetes environment. A node pool is a group of VM machines (nodes) inside that cluster.
+
+
+
+
+
+
+
+
+
+
+VPC = Virtual Private Cloud.
+
+In simple words, a VPC is your own private virtual network inside Google Cloud.
+
+It allows your cloud resources, like VMs and GKE clusters, to communicate with each other.
+Example
+Imagine you have created:
+- VM Instance
+- GKE Cluster
+- Database
+You can connect these resources through a VPC.
